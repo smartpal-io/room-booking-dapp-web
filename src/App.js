@@ -15,7 +15,6 @@ class App extends Component {
     super(props)
 
     this.state = {
-      roomBookingService: null,
       inputRoomId: '',
       web3: null
     }
@@ -38,12 +37,7 @@ class App extends Component {
       console.log('Error finding web3.')
     })
 
-    RoomBookingService.setProvider(this.state.web3.currentProvider);
-    RoomBookingService.deployed().then(function(contractInstance){
-      this.setState({
-        roomBookingService: contractInstance
-      })
-    });
+
   }
 
   /**** VIEW *****/
@@ -96,7 +90,10 @@ class App extends Component {
   addRoomAction(event) {
     var inputRoomId = this.state.inputRoomId;
     console.log("inputRoomId : ", inputRoomId);
-
+    RoomBookingService.setProvider(this.state.web3.currentProvider);
+    RoomBookingService.at('0x2DafbfdbC9562909Eed25f35E22069A8f12F945E').then(function(contractInstance){
+      contractInstance.addRoom(inputRoomId, 1);
+    });
   }
 
 }
