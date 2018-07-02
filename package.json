@@ -63,8 +63,7 @@
     "react-dom": "^15.4.2",
     "react-vertical-timeline-component": "^2.1.2",
     "openzeppelin-solidity": "^1.10.0",
-    "open-smartkit" : "0.0.5"
-
+    "open-smartkit": "0.0.6"
   },
   "scripts": {
     "start": "node scripts/start.js",

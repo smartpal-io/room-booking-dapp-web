@@ -16,6 +16,10 @@ class App extends Component {
 
     this.state = {
       inputRoomId: '',
+      inputContractAddress: '',
+      inputFrom: '',
+      inputUntil: '',
+      inputCapacity: '',
       web3: null
     }
 
@@ -54,6 +58,9 @@ class App extends Component {
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
+              {this.renderFormConfiguration()}
+            </div>
+            <div className="pure-u-1-1">
               {this.renderFormRoomManagement()}
             </div>
           </div>
@@ -62,12 +69,33 @@ class App extends Component {
     );
   }
 
+  renderFormConfiguration = () => {
+    return <form onSubmit={this.handleSubmit}>
+      <label>
+        Contract address  &nbsp; <input type="text" name="inputContractAddress" value={this.state.inputContractAddress} onChange={this.handleStateChange.bind(this)}/>
+      </label>
+    </form>
+  }
+
   renderFormRoomManagement = () => {
     return <form onSubmit={this.handleSubmit}>
       <label>
-        Room ID : &nbsp; <input type="text" name="inputRoomId" value={this.state.inputRoomId} onChange={this.handleRoomInformationChange.bind(this)}/>
+        Room ID  &nbsp; <input type="text" name="inputRoomId" value={this.state.inputRoomId} onChange={this.handleStateChange.bind(this)}/>
+      </label>
+      <label>
+        Capacity  &nbsp; <input type="text" name="inputCapacity" value={this.state.inputCapacity} onChange={this.handleStateChange.bind(this)}/>
       </label>
       <button onClick={this.addRoomAction.bind(this)}>Add</button>
+      <br />
+      <label>
+        From  &nbsp; <input type="text" name="inputFrom" value={this.state.inputFrom} onChange={this.handleStateChange.bind(this)}/>
+      </label>
+      <label>
+        To  &nbsp; <input type="text" name="inputUntil" value={this.state.inputUntil} onChange={this.handleStateChange.bind(this)}/>
+      </label>
+      <button onClick={this.checkRoomAvailabilityAction.bind(this)}>Check Availability</button>
+      <button onClick={this.bookRoomAction.bind(this)}>Book</button>
+
     </form>
   }
 
@@ -79,23 +107,60 @@ class App extends Component {
   }
 
 
-  /**** ROOM INFORMATION ACTION ****/
-
-  handleRoomInformationChange(event) {
+  handleStateChange(event) {
+    const name = event.target.name;
     this.setState({
-      inputRoomId: event.target.value,
+      [name]: event.target.value
     })
   }
 
+
   addRoomAction(event) {
     var inputRoomId = this.state.inputRoomId;
-    console.log("inputRoomId : ", inputRoomId);
+    var inputCapacity = this.state.inputCapacity;
+    console.log("inputRoomId : ", inputRoomId, " capacity : ", inputCapacity);
     RoomBookingService.setProvider(this.state.web3.currentProvider);
-    RoomBookingService.at('0x2DafbfdbC9562909Eed25f35E22069A8f12F945E').then(function(contractInstance){
-      contractInstance.addRoom(inputRoomId, 1);
-    });
+    var roomBookingService;
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      RoomBookingService.at(this.state.inputContractAddress).then((instance) => {
+        roomBookingService = instance
+        return roomBookingService.addRoom(inputRoomId, inputCapacity,  {from: accounts[0]})
+      })
+    })
   }
 
+  checkRoomAvailabilityAction(event) {
+    RoomBookingService.setProvider(this.state.web3.currentProvider);
+    var roomBookingService;
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      RoomBookingService.at(this.state.inputContractAddress).then((instance) => {
+        roomBookingService = instance
+        return roomBookingService.isRoomAvailable(
+          this.state.inputRoomId,
+          this.state.inputFrom,
+          this.state.inputUntil,
+        ).then((result) => {
+          console.log("isRoomAvailable : ", result);
+        })
+      })
+    })
+  }
+
+  bookRoomAction(event) {
+    RoomBookingService.setProvider(this.state.web3.currentProvider);
+    var roomBookingService;
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      RoomBookingService.at(this.state.inputContractAddress).then((instance) => {
+        roomBookingService = instance
+        return roomBookingService.book(
+          this.state.inputRoomId,
+          this.state.inputFrom,
+          this.state.inputUntil,
+          {from: accounts[0]}
+        )
+      })
+    })
+  }
 }
 
 export default App
