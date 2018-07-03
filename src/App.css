@@ -1,7 +1,7 @@
 /* PAGE */
 
 body {
-  background: #eeeeee;
+  background: #E8EAF6;
 }
 
 body,
@@ -41,7 +41,7 @@ code {
   padding-top: 3em;
   padding-bottom: 3em;
   padding-left: 3em;
-  background: #0c1a2b;
+  background: #3F51B5;
   color: white;
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
 }

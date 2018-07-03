@@ -20,6 +20,7 @@ class App extends Component {
       inputFrom: '',
       inputUntil: '',
       inputCapacity: '',
+      inputSlot: '',
       web3: null
     }
 
@@ -37,6 +38,7 @@ class App extends Component {
       })
 
     })
+
     .catch(() => {
       console.log('Error finding web3.')
     })
@@ -51,11 +53,17 @@ class App extends Component {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-          <h1>Room Booking</h1>
+          <h1>Bookchain</h1>
           <h2>Ultimate booking service running on blockchain</h2>
         </nav>
 
+
         <main className="container">
+          <div className="pure-g">
+            <div className="pure-u-1-1">
+                <h2> Manage bookings from one place </h2>
+            </div>
+          </div>
           <div className="pure-g">
             <div className="pure-u-1-1">
               {this.renderFormConfiguration()}
@@ -65,6 +73,8 @@ class App extends Component {
             </div>
           </div>
         </main>
+
+
       </div>
     );
   }
@@ -95,6 +105,7 @@ class App extends Component {
       </label>
       <button onClick={this.checkRoomAvailabilityAction.bind(this)}>Check Availability</button>
       <button onClick={this.bookRoomAction.bind(this)}>Book</button>
+      <button onClick={this.freeRoomAction.bind(this)}>Free</button>
 
     </form>
   }
@@ -157,10 +168,45 @@ class App extends Component {
           this.state.inputFrom,
           this.state.inputUntil,
           {from: accounts[0]}
+        ).then((result) => {
+            console.log("roomBookingService.book response received : ", result);
+            this.listenRoomBookedEvent(roomBookingService);
+        })
+      })
+    })
+  }
+
+  listenRoomBookedEvent(roomBookingService){
+    console.log("starting watching LogRoomBooked")
+    var event = roomBookingService.LogRoomBooked();
+    event.watch((err, result) => {
+            if (err) {
+              console.log('could not get event LogRoomBooked()');
+            } else {
+              console.log("LogRoomBooked : ", result);
+            }
+            console.log("stoping watching LogRoomBooked event")
+            event.stopWatching();
+
+    })
+  }
+
+  freeRoomAction(event) {
+    RoomBookingService.setProvider(this.state.web3.currentProvider);
+    var roomBookingService;
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      RoomBookingService.at(this.state.inputContractAddress).then((instance) => {
+        roomBookingService = instance
+        return roomBookingService.free(
+          this.state.inputRoomId,
+          this.state.inputFrom,
+          this.state.inputUntil,
+          {from: accounts[0]}
         )
       })
     })
   }
+
 }
 
 export default App
