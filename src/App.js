@@ -103,6 +103,9 @@ class App extends Component {
       <label>
         To  &nbsp; <input type="text" name="inputUntil" value={this.state.inputUntil} onChange={this.handleStateChange.bind(this)}/>
       </label>
+      <label>
+        Slot  &nbsp; <input type="text" name="inputSlot" value={this.state.inputSlot} onChange={this.handleStateChange.bind(this)}/>
+      </label>
       <button onClick={this.checkRoomAvailabilityAction.bind(this)}>Check Availability</button>
       <button onClick={this.bookRoomAction.bind(this)}>Book</button>
       <button onClick={this.freeRoomAction.bind(this)}>Free</button>
@@ -184,6 +187,11 @@ class App extends Component {
               console.log('could not get event LogRoomBooked()');
             } else {
               console.log("LogRoomBooked : ", result);
+              var slot = result["args"]["slot"];
+              console.log("Slot : ", slot.toNumber());
+              this.setState({
+                inputSlot: slot
+              })
             }
             console.log("stoping watching LogRoomBooked event")
             event.stopWatching();
@@ -197,10 +205,11 @@ class App extends Component {
     this.state.web3.eth.getAccounts((error, accounts) => {
       RoomBookingService.at(this.state.inputContractAddress).then((instance) => {
         roomBookingService = instance
+        console.log("invoking free with roomId : ", this.state.inputRoomId, " slot : ", this.state.inputSlot);
+
         return roomBookingService.free(
           this.state.inputRoomId,
-          this.state.inputFrom,
-          this.state.inputUntil,
+          this.state.inputSlot.toNumber(),
           {from: accounts[0]}
         )
       })
