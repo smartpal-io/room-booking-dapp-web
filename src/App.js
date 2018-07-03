@@ -1,19 +1,35 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import './App.css';
 import { default as contract } from 'truffle-contract';
 import RoomBookingServiceArtifacts from '../node_modules/open-smartkit/build/contracts/RoomBookingService.json'
-let RoomBookingService = contract(RoomBookingServiceArtifacts)
 import getWeb3 from './utils/getWeb3'
-
-
 import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
-import './App.css'
+
+let RoomBookingService = contract(RoomBookingServiceArtifacts)
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+});
 
 class App extends Component {
   constructor(props) {
     super(props)
-
+    this.classes  = props;
+    console.log(props);
     this.state = {
       inputRoomId: '',
       inputContractAddress: '',
@@ -28,9 +44,6 @@ class App extends Component {
   }
 
   componentWillMount() {
-    // Get network provider and web3 instance.
-    // See utils/getWeb3 for more info.
-
     getWeb3
     .then(results => {
       this.setState({
@@ -38,25 +51,18 @@ class App extends Component {
       })
 
     })
-
     .catch(() => {
       console.log('Error finding web3.')
     })
-
-
   }
 
-  /**** VIEW *****/
-
   render() {
-
     return (
       <div className="App">
-        <nav className="navbar pure-menu pure-menu-horizontal">
-          <h1>Bookchain</h1>
-          <h2>Ultimate booking service running on blockchain</h2>
-        </nav>
-
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Bookchain</h1>
+        </header>
 
         <main className="container">
           <div className="pure-g">
@@ -66,68 +72,53 @@ class App extends Component {
           </div>
           <div className="pure-g">
             <div className="pure-u-1-1">
-              {this.renderFormConfiguration()}
-            </div>
-            <div className="pure-u-1-1">
-              {this.renderFormRoomManagement()}
+              {this.renderRoomForm()}
             </div>
           </div>
         </main>
-
 
       </div>
     );
   }
 
-  renderFormConfiguration = () => {
+
+  renderRoomForm = () => {
     return <form onSubmit={this.handleSubmit}>
-      <label>
-        Contract address  &nbsp; <input type="text" name="inputContractAddress" value={this.state.inputContractAddress} onChange={this.handleStateChange.bind(this)}/>
-      </label>
+
+      <div className={this.classes.root}>
+        <Grid container spacing={24}>
+          <Grid item xs={12} >
+            <label>
+              Contract address  &nbsp; <input type="text" name="inputContractAddress" value={this.state.inputContractAddress} onChange={this.handleStateChange.bind(this)}/>
+              </label>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <label>
+              Room ID  &nbsp; <input type="text" name="inputRoomId" value={this.state.inputRoomId} onChange={this.handleStateChange.bind(this)}/>
+            </label>
+            <label>
+              Capacity  &nbsp; <input type="text" name="inputCapacity" value={this.state.inputCapacity} onChange={this.handleStateChange.bind(this)}/>
+            </label>
+            <label>
+              From  &nbsp; <input type="text" name="inputFrom" value={this.state.inputFrom} onChange={this.handleStateChange.bind(this)}/>
+            </label>
+            <label>
+              To  &nbsp; <input type="text" name="inputUntil" value={this.state.inputUntil} onChange={this.handleStateChange.bind(this)}/>
+            </label>
+            <label>
+              Slot  &nbsp; <input type="text" name="inputSlot" value={this.state.inputSlot} onChange={this.handleStateChange.bind(this)}/>
+            </label>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Button color="primary" className={this.classes.button} onClick={this.addRoomAction.bind(this)}>Add</Button>
+            <Button onClick={this.checkRoomAvailabilityAction.bind(this)}>Check Availability</Button>
+            <Button color="primary" onClick={this.bookRoomAction.bind(this)}>Book</Button>
+            <Button color="secondary" onClick={this.freeRoomAction.bind(this)}>Free</Button>
+          </Grid>
+        </Grid>
+      </div>
     </form>
   }
-
-  renderFormRoomManagement = () => {
-    return <form onSubmit={this.handleSubmit}>
-      <label>
-        Room ID  &nbsp; <input type="text" name="inputRoomId" value={this.state.inputRoomId} onChange={this.handleStateChange.bind(this)}/>
-      </label>
-      <label>
-        Capacity  &nbsp; <input type="text" name="inputCapacity" value={this.state.inputCapacity} onChange={this.handleStateChange.bind(this)}/>
-      </label>
-      <button onClick={this.addRoomAction.bind(this)}>Add</button>
-      <br />
-      <label>
-        From  &nbsp; <input type="text" name="inputFrom" value={this.state.inputFrom} onChange={this.handleStateChange.bind(this)}/>
-      </label>
-      <label>
-        To  &nbsp; <input type="text" name="inputUntil" value={this.state.inputUntil} onChange={this.handleStateChange.bind(this)}/>
-      </label>
-      <label>
-        Slot  &nbsp; <input type="text" name="inputSlot" value={this.state.inputSlot} onChange={this.handleStateChange.bind(this)}/>
-      </label>
-      <button onClick={this.checkRoomAvailabilityAction.bind(this)}>Check Availability</button>
-      <button onClick={this.bookRoomAction.bind(this)}>Book</button>
-      <button onClick={this.freeRoomAction.bind(this)}>Free</button>
-
-    </form>
-  }
-
-
-  /**** COMMON ACTION ****/
-
-  handleSubmit(event) {
-    event.preventDefault();
-  }
-
-
-  handleStateChange(event) {
-    const name = event.target.name;
-    this.setState({
-      [name]: event.target.value
-    })
-  }
-
 
   addRoomAction(event) {
     var inputRoomId = this.state.inputRoomId;
@@ -216,6 +207,21 @@ class App extends Component {
     })
   }
 
+  handleSubmit(event) {
+    event.preventDefault();
+  }
+
+  handleStateChange(event) {
+    const name = event.target.name;
+    this.setState({
+      [name]: event.target.value
+    })
+  }
 }
 
-export default App
+App.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+
+export default withStyles(styles)(App);

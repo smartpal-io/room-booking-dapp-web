@@ -1,14 +1,5 @@
 {
   "name": "room-booking-dapp-web",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smartpal-io/room-booking-dapp-web.git"
-  },
-  "keywords": [],
-  "bugs": {
-    "url": "https://github.com/smartpal-io/room-booking-dapp-web.git"
-  },
-  "homepage": "https://github.com/smartpal-io/room-booking-dapp-web.git",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -42,6 +33,7 @@
     "jest": "18.1.0",
     "json-loader": "0.5.4",
     "object-assign": "4.1.0",
+    "openzeppelin-solidity": "^1.10.0",
     "path-exists": "2.1.0",
     "postcss-loader": "1.0.0",
     "promise": "7.1.1",
@@ -58,56 +50,17 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
-    "dotenv": "^2.0.0",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-vertical-timeline-component": "^2.1.2",
-    "openzeppelin-solidity": "^1.10.0",
-    "open-smartkit": "0.0.7"
+    "open-smartkit": "0.0.7",
+    "react-dom": "^16.4.1",
+    "react": "latest",
+    "prop-types": "latest",
+    "@material-ui/core": "latest",
+    "react-scripts": "1.1.4"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
-    ],
-    "setupFiles": [
-      "<rootDir>/config/polyfills.js"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.js?(x)",
-      "<rootDir>/src/**/?(*.)(spec|test).js?(x)"
-    ],
-    "testEnvironment": "node",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "json",
-      "web.jsx",
-      "jsx"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }
